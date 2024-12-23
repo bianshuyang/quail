@@ -17,7 +17,9 @@ let showans
 let timewarning = true
 let ansvisible = false
 let timerunning = true
+let stillfalse = [-1,false]
 let hltr
+let tmpstorage
 
 // bucket helper functions
 function isInBucket(thisqid, bucket) {
@@ -40,34 +42,113 @@ function removeFromBucket(thisqid, bucket) {
 
 //prev and next question buttons
 $('#btn-prevques').on('click', function (e){
-  if(selectedQnum > 0) {
-    if(!complete && showans) {
-      $('#rightcol').addClass('d-none')
-      $('#rightcol').removeClass('d-flex')
-      ansvisible = false
-    }
+  if(selectedQnum >= 0) {
     newQnum = selectedQnum - 1
     $('.list-group-item')[newQnum].click()
+    // rerender page based on user stats
+    if (ansvisible ){
+      rerender(selectedQnum);
+    }
+    
   }
 })
+
 $('#btn-nextques').on('click', function (e){
   if(selectedQnum < numQuestions-1) {
     newQnum = selectedQnum + 1
     $('.list-group-item')[newQnum].click()
+    if (ansvisible ){
+      rerender(selectedQnum);
+    }
+    
   } else {
     $('#btn-close').click()
   }
 })
+/////////////////// showing answer
+/////////////////////////////////////})
+/////////////////////////////////////})
+/////////////////////////////////////
 $('#btn-nextques-inline').on('click', function (e) {
   if(!complete && showans) {
     $('#rightcol').removeClass('d-none')
     $('#rightcol').addClass('d-flex')
     ansvisible = true
-    createAnswerChoiceButtons()
+    //console.log("I made a click!");
+    //console.log($('#btn-nextques-inline').text());
+    submittingdatatodatabase();// submitting the answers to the database step 1
+    createAnswerChoiceButtons(); // step2
+
   } else {
-    $('#btn-nextques').click()
+    submittingEXAMdatatodatabase();
+    console.log(localinfo.progress.blockhist[0].answers);
+    $('#btn-nextques').click();
   }
 })
+/////////////////////////////////////})
+/////////////////////////////////////})
+/////////////////////////////////////
+
+async function rerender(selectedQnum){
+  if (localinfo.progress.blockhist[blockKey].answers[selectedQnum] != null){
+    step1();
+    //console.log("OK?");
+    await new Promise(resolve => setTimeout(resolve, 10)); // must wait!
+    createAnswerChoiceButtons();
+    //console.log("OK?");
+  }
+}
+
+function step1(){
+  $('#rightcol').removeClass('d-none')
+    $('#rightcol').addClass('d-flex')
+    ansvisible = true
+}
+
+function submittingdatatodatabase(){
+  console.log("BEGIN0");
+  if(!complete && !ansvisible) {
+      if( localinfo.progress.blockhist[blockKey].answers[selectedQnum]=='' ) {
+        ipcRenderer.send('answerselect')
+
+      }
+      localinfo.progress.blockhist[blockKey].answers[selectedQnum] = tmpstorage;
+      console.log("BEGIN");
+      localinfo.progress.blockhist[blockKey].submittedanswers[selectedQnum] = tmpstorage;
+      console.log(localinfo.progress.blockhist[blockKey].submittedanswers[selectedQnum]);
+      console.log("END");
+      $('.list-group-item').get(selectedQnum).style.fontWeight = 'normal'
+    }
+
+    if (ansvisible && stillfalse) {
+      //$(this).addClass('active')
+      if( localinfo.progress.blockhist[blockKey].answers[selectedQnum]=='' ) {
+        ipcRenderer.send('answerselect')
+      }
+      localinfo.progress.blockhist[blockKey].answers[selectedQnum] += tmpstorage
+      if (localinfo.progress.blockhist[blockKey].submittedanswers[selectedQnum]==''){
+        localinfo.progress.blockhist[blockKey].submittedanswers[selectedQnum] = tmpstorage;
+      }
+      $('.list-group-item').get(selectedQnum).style.fontWeight = 'normal'
+    }
+
+}
+
+
+function submittingEXAMdatatodatabase(){
+  if(!ansvisible) {
+      if( localinfo.progress.blockhist[blockKey].answers[selectedQnum]=='' ) {
+        ipcRenderer.send('answerselect')
+      }
+      localinfo.progress.blockhist[blockKey].answers[selectedQnum] = tmpstorage;
+      localinfo.progress.blockhist[blockKey].submittedanswers[selectedQnum] = tmpstorage;
+      $('.list-group-item').get(selectedQnum).style.fontWeight = 'normal'
+    }
+
+}
+
+
+
 
 // handle pause and close buttons
 $('#btn-pause').on('click', function (e) {
@@ -82,7 +163,7 @@ $('#btn-close').on('click', function (e) {
       localinfo.progress.blockhist[blockKey].complete = true
       numcorrect = 0
       for (var i=0; i<numQuestions; i++) {
-        if( localinfo.progress.blockhist[blockKey].answers[i] == localinfo.choices[blockqlist[i]].correct ) {
+        if( localinfo.progress.blockhist[blockKey].answers[i][0] == localinfo.choices[blockqlist[i]].correct ) {
           numcorrect = numcorrect + 1
           if( isInBucket(blockqlist[i], 'incorrects') ) {
             removeFromBucket(blockqlist[i], 'incorrects')
@@ -131,11 +212,14 @@ function generateQuestionList() {
     }
     rightwronghtml = ''
     if(complete) {
-      if( localinfo.progress.blockhist[blockKey].answers[i] == localinfo.choices[blockqlist[i]].correct ) {
+      if( localinfo.progress.blockhist[blockKey].submittedanswers[i] == localinfo.choices[blockqlist[i]].correct ) {
         //correct answer
+        console.log("You have,",localinfo.progress.blockhist[blockKey].answers[i][-1],'but',localinfo.choices[blockqlist[i]].correct )
         rightwronghtml = '<span class="badge badge-success">✓</span>'
       } else {
         //wrong answer
+        console.log("You have,",localinfo.progress.blockhist[blockKey].answers[i][-1],'but',localinfo.choices[blockqlist[i]].correct )
+        
         rightwronghtml = '<span class="badge badge-danger">✗</span>'
       }
     }
@@ -150,54 +234,118 @@ function generateQuestionList() {
   })
 }
 
+
+
+
+
+
 // generate answer choice html
 function createAnswerChoiceButtons() {
   $('#btngrp-choices').empty()
+
   for (const c of localinfo.choices[qid].options) {
+    //console.log(c);
+    //console.log(localinfo);
+    //console.log(qid);
+    //console.log(localinfo.choices[qid].options);
     buttonCssClasses = ''
-    if(complete || ansvisible) {
-      if( c == localinfo.choices[blockqlist[selectedQnum]].correct ) {
-        if (c == localinfo.progress.blockhist[blockKey].answers[selectedQnum]) {
+    allurchoice = localinfo.progress.blockhist[blockKey].answers[selectedQnum];
+    if (allurchoice.length>=1){
+      yourchoice = allurchoice.charAt(allurchoice.length-1);
+    }
+    else{
+      yourchoice = allurchoice;
+    }
+    correctchoice = localinfo.choices[blockqlist[selectedQnum]].correct
+    //console.log(yourchoice,correctchoice,c);
+
+    if (complete || ansvisible){
+        if (c!=yourchoice){
+          if (allurchoice.match(c) == null){
+            buttonCssClasses = 'btn-outline-primary'
+            $("."+c).hide();
+          }
+          else{
+            $("."+c).show();
+            if (c!=correctchoice){
+                buttonCssClasses = 'btn-danger'
+            }
+            else{
+                buttonCssClasses ='btn-success' 
+            }
+          }
+        }
+        else{
+          $("."+yourchoice).show();
+          if (yourchoice!=correctchoice){
+              buttonCssClasses = 'btn-danger'
+              
+          }
+          else{
+              buttonCssClasses ='btn-success'
+              if (stillfalse[0]!=selectedQnum){
+                stillfalse = true
+              }
+              else{
+                stillfalse = false
+              }
+          }
+        }
+    }
+
+    /*if(complete || ansvisible) {
+      if( c == var2 ) {
+        if (c == var1 ) {
           buttonCssClasses = 'btn-success'
-        } else {
+        }
+        else {
           buttonCssClasses = 'btn-success disabled'
         }
       } else {
-        if (c == localinfo.progress.blockhist[blockKey].answers[selectedQnum]) {
+        if (c == var1) {
           buttonCssClasses = 'btn-danger'
-        } else {
+        }
+        else {
           buttonCssClasses = 'btn-outline-primary disabled'
         }
       }
     } else {
-      if (c == localinfo.progress.blockhist[blockKey].answers[selectedQnum]) {
+      if (c == var1) {
         buttonCssClasses = 'btn-outline-primary active'
-      } else {
+      }
+      else {
         buttonCssClasses = 'btn-outline-primary'
       }
-    }
+    }*/
+    
+
+
     html = `<button class="btn ${buttonCssClasses} border rounded-pill btn-choice" type="button" style="margin: 4px;">${c}</button>`
     $('#btngrp-choices').append(html)
 
   }
+
+
   $('.btn-choice').on('click', function (e){
-    if(!complete && !ansvisible) {
-      $('.btn-choice').removeClass('active')
-      $(this).addClass('active')
-      if( localinfo.progress.blockhist[blockKey].answers[selectedQnum]=='' ) {
-        ipcRenderer.send('answerselect')
-      }
-      localinfo.progress.blockhist[blockKey].answers[selectedQnum] = $(this).text()
-      $('.list-group-item').get(selectedQnum).style.fontWeight = 'normal'
-    }
+    //$(this).addClass("btn-outline-primary active")
+    tmpstorage = $(this).text();
+    console.log(tmpstorage);
+    
+
   })
+
+
+
+
 }
 
 // load question
 function loadQuestion() {
   if(!complete && showans) {
+    
     $('#rightcol').addClass('d-none')
     $('#rightcol').removeClass('d-flex')
+
     ansvisible = false
   }
   qid = blockqlist[selectedQnum]
@@ -397,7 +545,6 @@ function customScrollbars() {
   document.getElementsByTagName("head")[0].appendChild(styleElement);
 
 }
-if (process.platform == 'win32') { customScrollbars() }
 
 ipcRenderer.on('dopause', function (event) {
   if(!complete) {
