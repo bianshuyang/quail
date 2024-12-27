@@ -46,8 +46,13 @@ $('#btn-prevques').on('click', function (e){
     newQnum = selectedQnum - 1
     $('.list-group-item')[newQnum].click()
     // rerender page based on user stats
-    if (ansvisible ){
+
+    if ($('#btn-nextques-inline').text()!="Submit →" && localinfo.progress.blockhist[blockKey].submittedanswers[selectedQnum].length>0){
       rerender(selectedQnum);
+
+    }
+    else{
+      limitedrerender(selectedQnum);
     }
     
   }
@@ -57,8 +62,12 @@ $('#btn-nextques').on('click', function (e){
   if(selectedQnum < numQuestions-1) {
     newQnum = selectedQnum + 1
     $('.list-group-item')[newQnum].click()
-    if (ansvisible ){
+    if ($('#btn-nextques-inline').text()!="Submit →" && localinfo.progress.blockhist[blockKey].submittedanswers[selectedQnum].length>0){
       rerender(selectedQnum);
+
+    }
+    else{
+      limitedrerender(selectedQnum);
     }
     
   } else {
@@ -98,6 +107,18 @@ async function rerender(selectedQnum){
     //console.log("OK?");
   }
 }
+
+
+async function limitedrerender(selectedQnum){
+  if (localinfo.progress.blockhist[blockKey].answers[selectedQnum] != null){
+    //step1();
+    //console.log("OK?");
+    await new Promise(resolve => setTimeout(resolve, 10)); // must wait!
+    createEXAMAnswerChoiceButtons();
+    //console.log("OK?");
+  }
+}
+
 
 function step1(){
   $('#rightcol').removeClass('d-none')
@@ -231,11 +252,85 @@ function generateQuestionList() {
     $(this).addClass('active')
     selectedQnum = parseInt($(this).data('qnum'))
     loadQuestion()
+    if ($('#btn-nextques-inline').text()!="Submit →" && localinfo.progress.blockhist[blockKey].submittedanswers[selectedQnum].length>0){
+      rerender(selectedQnum);
+
+    }
+    else{
+      limitedrerender(selectedQnum);
+    }
+
   })
 }
 
 
 
+
+// generate answer choice html
+function createEXAMAnswerChoiceButtons() {
+  $('#btngrp-choices').empty()
+
+  for (const c of localinfo.choices[qid].options) {
+    //console.log(c);
+    //console.log(localinfo);
+    //console.log(qid);
+    //console.log(localinfo.choices[qid].options);
+    buttonCssClasses = ''
+    yourchoice = localinfo.progress.blockhist[blockKey].submittedanswers[selectedQnum]
+    //console.log(yourchoice,correctchoice,c);
+
+    if (c==yourchoice){
+      buttonCssClasses = 'btn-outline-primary active'
+    }
+    else{
+      buttonCssClasses = 'btn-outline-primary'
+    }
+
+    /*if(complete || ansvisible) {
+      if( c == var2 ) {
+        if (c == var1 ) {
+          buttonCssClasses = 'btn-success'
+        }
+        else {
+          buttonCssClasses = 'btn-success disabled'
+        }
+      } else {
+        if (c == var1) {
+          buttonCssClasses = 'btn-danger'
+        }
+        else {
+          buttonCssClasses = 'btn-outline-primary disabled'
+        }
+      }
+    } else {
+      if (c == var1) {
+        buttonCssClasses = 'btn-outline-primary active'
+      }
+      else {
+        buttonCssClasses = 'btn-outline-primary'
+      }
+    }*/
+    
+
+
+    html = `<button class="btn ${buttonCssClasses} border rounded-pill btn-choice" type="button" style="margin: 4px;">${c}</button>`
+    $('#btngrp-choices').append(html)
+
+  }
+
+
+  $('.btn-choice').on('click', function (e){
+    //$(this).addClass("btn-outline-primary active")
+    tmpstorage = $(this).text();
+    console.log(tmpstorage);
+    
+
+  })
+
+
+
+
+}
 
 
 
