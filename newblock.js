@@ -180,12 +180,19 @@ $('#btn-startblock').on('click', function(e) {
       store.set('recent-tagschosenstr', tagschosenstr)
       store.set('recent-allsubtagsenabled', allsubtagsenabled)
       //sequential or random
-      if(store.get('sequential-setting')) {
-        qlist.sort(function (a, b) {
-          return parseInt(a) - parseInt(b)
-        })
-        blockqlist = qlist.slice(0, numq)
-      } else {
+      if (store.get('sequential-setting')) {
+        const doSort = confirm('Do you want to sort the questions numerically? (Non-numeric entries will be ignored)')
+
+        if (doSort) {
+          // Filter out non-numeric entries and sort numerically
+          const numericOnly = qlist.filter(q => !isNaN(parseInt(q)))
+          numericOnly.sort((a, b) => parseInt(a) - parseInt(b))
+          blockqlist = numericOnly.slice(0, numq)
+        } else {
+          blockqlist = qlist.slice(0, numq)
+        }
+      }
+      else {
         blockqlist = getRandom(qlist, numq)
       }
       //handle paired questions

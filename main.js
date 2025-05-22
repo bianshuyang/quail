@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog, session } = require('electron')
 const path = require('path')
 const fs = require('fs')
 const Store = require('electron-store')
@@ -44,6 +44,47 @@ function createWindow () {
   win.webContents.on('did-finish-load', () => {
     sendinfo()
   })
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+  callback({
+    responseHeaders: {
+      ...details.responseHeaders,
+      'Content-Security-Policy': [
+        // Allow scripts from 'self' (your app), any host (*), inline scripts, and eval-like functions.
+        // Also allows data:, blob:, filesystem: schemes.
+        "script-src 'self' * file: 'unsafe-inline' 'unsafe-eval' data: blob: filesystem:;",
+        "frame-src 'self' * file: data: blob: filesystem:;",
+
+
+        // Allow styles from 'self', any host (*), and inline styles.
+        // Also allows data:, blob:, filesystem: schemes.
+        "style-src 'self' * 'unsafe-inline' data: blob: filesystem:;",
+
+        // Allow images from 'self', any host (*).
+        // Also allows data:, blob:, filesystem: schemes.
+        "img-src 'self' * data: blob: filesystem:;",
+
+        // Allow fonts from 'self', any host (*).
+        // Also allows data:, blob:, filesystem: schemes.
+        "font-src 'self' * data: blob: filesystem:;",
+
+        // Allow connections (XHR, WebSockets, etc.) to 'self', any host (*).
+        // Also allows data:, blob: schemes.
+        "connect-src 'self' * data: blob:;",
+
+        // Allow iframes from 'self', any host (*).
+        // Also allows data:, blob:, filesystem: schemes.
+
+        // Allow audio/video from 'self', any host (*).
+        // Also allows data:, blob:, filesystem: schemes.
+        "media-src 'self' * data: blob: filesystem:;",
+
+        // It's still good practice to restrict object-src if you don't use <object> or <embed>
+        // "object-src 'none';",
+      ].join(' ')
+    }
+  });
+});
+
   win.loadFile('index.html')
 }
 

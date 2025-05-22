@@ -6,7 +6,209 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>qbv</title>
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+          pageLanguage: 'en', // The original language of your page
+          includedLanguages: 'zh-CN,en', // Languages to offer (Simplified Chinese, English)
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+          autoDisplay: false // Do not automatically display a banner
+        }, 'google_translate_element_placeholder'); // ID of the div to host the widget
+
+        // Optionally, enable your custom buttons here if they were initially disabled
+        var btnZH = document.getElementById('customTranslateToZH');
+        var btnEN = document.getElementById('customTranslateToEN');
+        if (btnZH) {
+          btnZH.disabled = false;
+          btnZH.title = "Translate to Chinese";
+        }
+        if (btnEN) {
+          btnEN.disabled = false;
+          btnEN.title = "Translate to English";
+        }
+      }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </head>
+<style>
+
+
+/* Add this to your existing <style> block in the <head> or your CSS file */
+#google_translate_element_placeholder .goog-te-gadget-simple {
+    background-color: transparent; /* Match your card background */
+    border: 1px solid #ced4da; /* Example border, similar to Bootstrap inputs */
+    padding: 0.375rem 0.75rem;
+    border-radius: .25rem; /* Bootstrap's default border-radius */
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#google_translate_element_placeholder .goog-te-menu-value span {
+    color: #495057; /* Adjust text color if needed */
+    font-size: 1rem; /* Adjust font size if needed */
+}
+
+#google_translate_element_placeholder .goog-te-gadget-icon {
+    /* Styles for the Google icon, if you want to change it */
+    display: none !important; /* Example: Hide the Google icon if you want a cleaner look */
+}
+
+/* Ensure elements in the header card are aligned nicely */
+.card-body.d-md-flex > * {
+    margin-left: 8px;
+    margin-right: 8px;
+}
+#google_translate_element_placeholder {
+    margin-left: auto; /* Push it towards other items if needed */
+}
+
+    table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 3px solid black; /* Thick border around the table */
+}
+
+th, td {
+    border: 2px solid black; /* Thick border around table cells */
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2; /* Optional: Light gray background for headers */
+}
+    /* 新增动态渐变背景 */
+body {
+    /*background: linear-gradient(135deg, #dce0ef 0%, #f0f3ff 50%, #e6e9f2 100%);*/
+    background-size: 200% 200%;
+    animation: GradientFlow 15s ease infinite;
+    /* otf computer modern from http://mirrors.concertpass.com/tex-archive/fonts/cm-unicode/fonts/otf/ */
+
+}
+
+
+@keyframes GradientFlow {
+    0% { background-position: 0% 50% }
+    50% { background-position: 100% 50% }
+    100% { background-position: 0% 50% }
+}
+
+/* 增强按钮立体效果 */
+.btn {
+    position: relative;
+    border-radius: 12px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+    border: none !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.btn:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 12px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* 按钮颜色增强 */
+.btn-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0063cc 100%);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0063cc 0%, #004d99 100%);
+}
+
+.btn-outline-warning {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border: 2px solid #ffc107 !important;
+}
+
+.btn-outline-warning:hover {
+    background: linear-gradient(135deg, #ffc107 0%, #ffab00 100%);
+}
+
+/* 卡片立体效果增强 */
+.card {
+    border-radius: 16px !important;
+    border: none !important;
+    box-shadow: 0 8px 30px -6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    background: transparent !important; /* Removes the white background */
+    backdrop-filter: blur(10px);
+    font-family: Arial, sans-serif;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+}
+
+#btngrp-choices {
+    display: flex;
+    flex-direction: row; /* Ensure horizontal layout */
+    flex-wrap: nowrap; /* Prevent wrapping onto multiple lines */
+    gap: 8px; /* Space between buttons */
+    justify-content: center; /* Center buttons */
+    width: 100%; /* Ensure it takes the full width */
+}
+
+/* 选项按钮动画 */
+#btngrp-choices .btn {
+    min-width: 30px;
+    padding: 8px 12px;
+    border: 2px solid var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+#btngrp-choices .btn:hover {
+    background: black;
+    color: white;
+    transform: scale(1.05);
+}
+
+/* 动态高亮 */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.highlight-pulse {
+    animation: pulse 1.5s infinite;
+}
+
+/* 进度指示器 */
+.progress-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.progress-dot.active {
+    background: var(--primary-color);
+    transform: scale(1.4);
+}
+</style>
+
 
 <body style="height: 100%; overflow: hidden;">
     <div class="container-fluid" style="height: 100%;padding: 12px;">
@@ -18,15 +220,25 @@
             <div class="col d-flex flex-column">
                 <div class="row" style="height: 72px;margin-bottom: 12px;">
                     <div class="col">
-                        <div class="card" style="height: 100%;">
-                            <div class="card-body d-md-flex justify-content-between align-items-md-center" style="padding: 12px;">
-                                <p id="timep" style="margin: 0px; white-space: pre-line;">Time Remaining<br>88:88:88</p><button id="btn-flagged" class="btn btn-outline-warning" type="button" style="font-size: 20px;height: 44px;width: 64px;"><strong>⚑</strong></button>
-                                <div class="btn-group" role="group"><button id="btn-prevques" class="btn btn-primary" type="button" style="font-size: 20px;width: 64px;height: 44px;">❮</button><button id="btn-nextques" class="btn btn-primary btn-nextques" type="button" style="font-size: 20px;width: 64px;height: 44px;">❯</button></div>
-                                <div id="btngrp-panes" class="btn-group" role="group"></div>
-                                <div role="group" class="btn-group" style="height: 44px;"><button class="btn btn-dark" id="btn-pause" type="button" style="width: 64px;font-size: 10px;"> ▌▌</button><button class="btn btn-dark" id="btn-close" type="button" style="width: 64px;font-size: 18px;">✕<br /></button></div>
-                            </div>
-                        </div>
-                    </div>
+    <div class="card" style="height: 100%;">
+        <div class="card-body d-md-flex justify-content-between align-items-md-center" style="padding: 12px;">
+            <p id="timep" style="margin: 0px; white-space: pre-line;">Time Remaining<br>88:88:88</p>
+            
+           <div id="google_translate_element_placeholder" style="min-width: 100px; margin-left:8px; margin-right:8px;"></div>
+
+            <button id="customTranslateToZH" class="btn btn-sm btn-outline-primary">To 中文</button>
+            <button id="customTranslateToEN" class="btn btn-sm btn-outline-secondary ml-1">To English</button>
+
+            <button id="btn-flagged" class="btn btn-outline-warning" type="button" style="font-size: 20px;height: 44px;width: 64px;"><strong>⚑</strong></button>
+
+            <button id="btn-flagged" class="btn btn-outline-warning" type="button" style="font-size: 20px;height: 44px;width: 64px;"><strong>⚑</strong></button>
+            <div class="btn-group" role="group"><button id="btn-prevques" class="btn btn-primary" type="button" style="font-size: 20px;width: 64px;height: 44px;">❮</button><button id="btn-nextques" class="btn btn-primary btn-nextques" type="button" style="font-size: 20px;width: 64px;height: 44px;">❯</button></div>
+            <div id="btngrp-panes" class="btn-group" role="group"></div>
+            <button id="values" class="btn btn-primary btn-nextques" type="button" style="font-size: 10px;width: 64px;height: 44px;" onclick="window.open('https://www.nbme.org/laboratory-values');">Values</button>
+            <div role="group" class="btn-group" style="height: 44px;"><button class="btn btn-dark" id="btn-pause" type="button" style="width: 64px;font-size: 10px;">&nbsp;▌▌</button><button class="btn btn-dark" id="btn-close" type="button" style="width: 64px;font-size: 18px;">✕<br /></button></div>
+        </div>
+    </div>
+</div>
                 </div>
                 <div class="row flex-fill">
                     <div class="col d-flex flex-column" style="width: 50%;" id="leftcol">
@@ -36,17 +248,23 @@
                                     <div id="leftreplace"></div>
                                     <div class="d-inline-flex flex-column" style="padding: 8px;">
                                         <div class="btn-group mx-auto" role="group" id="btngrp-choices" style="margin: 8px;"></div><button class="btn border rounded-pill mx-auto btn-nextques" id="btn-nextques-inline" type="button" style="padding-right: 36px;padding-left: 36px;color: var(--primary);">Submit →</button>
+                                        
+
 
                                     </div>
+                                    <div id="quoteContainer" style="margin-top: 10px; font-style: italic;"></div>
                                 </div>
                             </div>
+
                         </div>
+
                     </div>
                     <div class="col d-flex flex-column" style="padding-left: 0px; width: 50%;" id="rightcol" style="padding-left: 0px;">
                         <div class="card flex-grow-1">
                             <div class="card-body" id="rightcard" style="padding: 12px;">
                                 <div id="rightcontent" style="overflow: scroll;height: 0px;">
                                     <div id="rightreplace"></div>
+
                                 </div>
                             </div>
                         </div>
@@ -59,4 +277,53 @@
 
 <script src="TextHighlighter.js"></script>
 <script src="examview.js"></script>
+
+<script type="text/javascript">
+      // Function to programmatically trigger translation using the hidden widget
+      function triggerGoogleTranslate(langCode) {
+        var placeholder = document.getElementById('google_translate_element_placeholder');
+        var selectElement = placeholder.querySelector('.goog-te-combo');
+        if (selectElement) {
+          selectElement.value = langCode;
+          // Create and dispatch a 'change' event to trigger the translation
+          var event;
+          if (typeof(Event) === 'function') {
+            event = new Event('change', { 'bubbles': true, 'cancelable': true });
+          } else { // For older browser compatibility (less likely an issue in Electron's Chromium)
+            event = document.createEvent('HTMLEvents');
+            event.initEvent('change', true, true);
+          }
+          selectElement.dispatchEvent(event);
+        } else {
+          console.error("Google Translate dropdown (.goog-te-combo) not found. Was googleTranslateElementInit called and did it succeed?");
+        }
+      }
+
+      // Attach event listeners to your custom buttons
+      // Ensure this runs after the DOM is loaded. Placing it at the end of <body> helps.
+      document.addEventListener('DOMContentLoaded', function() {
+        var btnTranslateToZH = document.getElementById('customTranslateToZH');
+        if (btnTranslateToZH) {
+          btnTranslateToZH.addEventListener('click', function() {
+            triggerGoogleTranslate('zh-CN'); // 'zh-CN' for Simplified Chinese
+          });
+        }
+
+        var btnTranslateToEN = document.getElementById('customTranslateToEN');
+        if (btnTranslateToEN) {
+          btnTranslateToEN.addEventListener('click', function() {
+            triggerGoogleTranslate('en');
+          });
+        }
+
+        // Remove the initial 'disabled' and 'title' attributes if you haven't done so in googleTranslateElementInit
+        // or if you prefer to manage it here after the widget is certainly called.
+        // setTimeout(function() { // Add a small delay to ensure the widget has initialized
+        //     if (btnTranslateToZH) { btnTranslateToZH.disabled = false; btnTranslateToZH.title = "Translate to Chinese"; }
+        //     if (btnTranslateToEN) { btnTranslateToEN.disabled = false; btnTranslateToEN.title = "Translate to English"; }
+        // }, 1500); // Adjust delay if needed, or rely on googleTranslateElementInit
+      });
+    </script>
+</body>
+</html>
 </html>

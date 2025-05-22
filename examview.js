@@ -436,6 +436,17 @@ function createAnswerChoiceButtons() {
 
 // load question
 function loadQuestion() {
+  // Attempt to revert translation to English before loading new question content.
+  // This aims to clear the Google Translate widget's state related to the old content.
+  var googleTranslatePlaceholder = document.getElementById('google_translate_element_placeholder'); //
+  if (googleTranslatePlaceholder) {
+    var selectElement = googleTranslatePlaceholder.querySelector('.goog-te-combo'); //
+    // Check if a translation is active (not 'en') and the trigger function exists
+    if (selectElement && selectElement.value !== 'en' && typeof triggerGoogleTranslate === 'function') {
+      triggerGoogleTranslate('en'); // Programmatically switch back to English
+      // Note: This operation is asynchronous. The page might briefly flash English.
+    }
+  }
   if(!complete && showans) {
     
     $('#rightcol').addClass('d-none')
@@ -556,6 +567,8 @@ ipcRenderer.on('qbankinfo', function (event, qbankinfo) {
   complete = localinfo.progress.blockhist[blockKey].complete
   timelimit = localinfo.progress.blockhist[blockKey].timelimit
   oldelapsedtime = localinfo.progress.blockhist[blockKey].elapsedtime
+  console.log(localinfo.progress.blockhist[blockKey]);
+  console.log(blockKey);
   selectedQnum = localinfo.progress.blockhist[blockKey].currentquesnum
   showans = localinfo.progress.blockhist[blockKey].showans
 
@@ -602,6 +615,7 @@ ipcRenderer.on('qbankinfo', function (event, qbankinfo) {
         timerunning = true
       }
       if (timerunning) {
+        
         elapsedtime = oldelapsedtime + (Date.now() - starttime) / 1000
         if(timelimit == -1) {
           $('#timep').text(`Time Used\n${Math.floor( elapsedtime / 3600 )}:${Math.floor( (elapsedtime%3600)/60 ).toString().padStart(2,0)}:${Math.floor( elapsedtime%60 ).toString().padStart(2,0)}`)
